@@ -1,23 +1,98 @@
 const settings = require("../settings");
+const os = require('os');
+const fs = require('fs');
+const path = require('path');
+
+function formatTime(seconds) {
+    const days = Math.floor(seconds / (24 * 60 * 60));
+    seconds = seconds % (24 * 60 * 60);
+    const hours = Math.floor(seconds / (60 * 60));
+    seconds = seconds % (60 * 60);
+    const minutes = Math.floor(seconds / 60);
+    seconds = Math.floor(seconds % 60);
+
+    let time = '';
+    if (days > 0) time += `${days}d `;
+    if (hours > 0) time += `${hours}h `;
+    if (minutes > 0) time += `${minutes}m `;
+    if (seconds > 0 || time === '') time += `${seconds}s`;
+
+    return time.trim();
+}
+
+function getEastAfricaTime() {
+    const now = new Date();
+    const eatOffset = 3 * 60;
+    const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+    const eatTime = new Date(utc + (eatOffset * 60000));
+    
+    let hours = eatTime.getHours();
+    const minutes = eatTime.getMinutes().toString().padStart(2, '0');
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+    
+    return `${hours}:${minutes} ${ampm}`;
+}
+
+function getBotMode() {
+    try {
+        const data = JSON.parse(fs.readFileSync('./data/messageCount.json', 'utf8'));
+        return data.isPublic ? '🌐 Public' : '🔒 Private';
+    } catch (error) {
+        return '🌐 Public';
+    }
+}
+
 async function aliveCommand(sock, chatId, message) {
     try {
-        const message1 = `*🤖 𝗡𝗔𝗚𝗜𝗜𝗣 𝗠𝗗 𝗕𝗢𝗧 𝗶𝘀 𝗔𝗰𝘁𝗶𝘃𝗲*\n\n` +
-                       `*𝗩𝗲𝗿𝘀𝗶𝗼𝗻:* ${settings.version}\n` +
-                       `*𝗦𝘁𝗮𝘁𝘂𝘀:* Online\n` +
-                       `*𝗠𝗼𝗱𝗲:* Public\n\n` +
-                       `*🍁 𝗙𝗲𝗮𝘂𝘁𝘂𝗿𝗲𝘀:*\n` +
-                       `• 𝗚𝗿𝗼𝘂𝗹 𝗠𝗮𝗻𝗮𝗴𝗲𝗺𝗲𝗻𝘁\n` +
-                       `• 𝗗𝗼𝘄𝗻𝗹𝗼𝗮𝗱 𝗠𝗲𝗻𝘂\n` +
-                       `• 𝗢𝘄𝗻𝗲𝗿 𝗠𝗲𝗻𝘂\n` +
-                       `• 𝗜𝗠𝗚 𝗠𝗲𝗻𝘂!\n\n` +
-                       `𝗧𝘆𝗽𝗲 *.menu* 𝗳𝗼𝗿 𝗳𝘂𝗹𝗹l 𝗰𝗼𝗺𝗺𝗮𝗻𝗱 𝗹𝗶𝘀𝘁`;
+        const start = Date.now();
+        const tempMsg = await sock.sendMessage(chatId, { text: '⚡ Checking...' }, { quoted: message });
+        const end = Date.now();
+        const ping = Math.round((end - start) / 2);
+        
+        const uptimeInSeconds = process.uptime();
+        const uptimeFormatted = formatTime(uptimeInSeconds);
+        const currentTime = getEastAfricaTime();
+        const botMode = getBotMode();
+        const totalMem = (os.totalmem() / (1024 * 1024 * 1024)).toFixed(2);
+        const freeMem = (os.freemem() / (1024 * 1024 * 1024)).toFixed(2);
+        const usedMem = (totalMem - freeMem).toFixed(2);
+
+        const aliveMessage = `
+╭━━━━━━━━━━━━━━━━━━━━━╮
+┃  ✨ 𝐍𝐀𝐆𝐈𝐈𝐏 𝐒𝐓𝐀𝐑 𝐌𝐃 ✨
+┃━━━━━━━━━━━━━━━━━━━━━
+┃ 🟢 𝗦𝘁𝗮𝘁𝘂𝘀: 𝗢𝗻𝗹𝗶𝗻𝗲 & 𝗔𝗰𝘁𝗶𝘃𝗲
+┃━━━━━━━━━━━━━━━━━━━━━
+┃ 👑 𝗢𝘄𝗻𝗲𝗿: 𝗡𝗮𝗴𝗶𝗶𝗽 𝗦𝘁𝗮𝗿
+┃ 📦 𝗩𝗲𝗿𝘀𝗶𝗼𝗻: ${settings.version}
+┃ 🔐 𝗠𝗼𝗱𝗲: ${botMode}
+┃ ⏰ 𝗧𝗶𝗺𝗲: ${currentTime}
+┃━━━━━━━━━━━━━━━━━━━━━
+┃ ⚡ 𝗦𝗽𝗲𝗲𝗱: ${ping}ms
+┃ 🕐 𝗨𝗽𝘁𝗶𝗺𝗲: ${uptimeFormatted}
+┃ 💾 𝗥𝗔𝗠: ${usedMem}GB / ${totalMem}GB
+┃━━━━━━━━━━━━━━━━━━━━━
+┃ 🌟 𝗙𝗲𝗮𝘁𝘂𝗿𝗲𝘀:
+┃ ├ 📥 𝗗𝗼𝘄𝗻𝗹𝗼𝗮𝗱𝗲𝗿
+┃ ├ 🎮 𝗚𝗮𝗺𝗲𝘀
+┃ ├ 🤖 𝗔𝗜 𝗧𝗼𝗼𝗹𝘀
+┃ ├ 👥 𝗚𝗿𝗼𝘂𝗽 𝗠𝗮𝗻𝗮𝗴𝗲
+┃ └ 🎨 𝗠𝗲𝗱𝗶𝗮 𝗧𝗼𝗼𝗹𝘀
+╰━━━━━━━━━━━━━━━━━━━━━╯
+  
+  📝 𝗧𝘆𝗽𝗲 *.𝗺𝗲𝗻𝘂* 𝗳𝗼𝗿 𝗰𝗼𝗺𝗺𝗮𝗻𝗱𝘀
+  
+  © 𝗣𝗼𝘄𝗲𝗿𝗲𝗱 𝗯𝘆 𝗡𝗮𝗴𝗶𝗶𝗽 𝗔𝗯𝗱𝗶 𝗛𝗮𝘀𝗮𝗻`;
 
         await sock.sendMessage(chatId, {
-            text: message1,
-            }, { quoted: message });
+            text: aliveMessage.trim(),
+        }, { quoted: message });
+
     } catch (error) {
         console.error('Error in alive command:', error);
-        await sock.sendMessage(chatId, { text: 'Bot is alive and running!' }, { quoted: message });
+        await sock.sendMessage(chatId, { text: '🟢 Bot is alive and running!' }, { quoted: message });
     }
 }
 
