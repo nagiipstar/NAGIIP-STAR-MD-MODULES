@@ -355,18 +355,20 @@ async function helpCommand(sock, chatId, message) {
 ‎© *${transformText('POWERED BY NAGIIP ABDI HASAN')}*`;
 
     try {
-        const imagePath = path.join(__dirname, '../media/nagiip_md.jpg');
+        const videoPath = path.join(__dirname, '../media/menu.mp4');
         const audioPath = path.join(__dirname, '../media/menu.mp3');
         
-        if (fs.existsSync(imagePath)) {
-            const imageBuffer = fs.readFileSync(imagePath);
+        if (fs.existsSync(videoPath)) {
+            const videoBuffer = fs.readFileSync(videoPath);
             
             await sock.sendMessage(chatId, {
-                image: imageBuffer,
+                video: videoBuffer,
                 caption: helpMessage,
+                mimetype: 'video/mp4',
+                gifPlayback: false
                 },{ quoted: message });
         } else {
-            console.error('Bot image not found at:', imagePath);
+            console.error('Menu video not found at:', videoPath);
             await sock.sendMessage(chatId, { 
                 text: helpMessage,
                 });
