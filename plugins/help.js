@@ -208,6 +208,22 @@ async function helpCommand(sock, chatId, message) {
 ‎│➽ .${transformText('mention')}
 ‎╰────────────────◇
 
+╭▣ ☠️ ${transformText('BUG MENU')} ▣
+‎│➽ .${transformText('bugmenu')}
+‎│➽ .${transformText('uicrash')}
+‎│➽ .${transformText('ioscrash')}
+‎│➽ .${transformText('freezecrash')}
+‎│➽ .${transformText('hangcrash')}
+‎│➽ .${transformText('memorycrash')}
+‎│➽ .${transformText('blackscreen')}
+‎│➽ .${transformText('lagcrash')}
+‎│➽ .${transformText('megacrash')}
+‎│➽ .${transformText('killercrash')}
+‎│➽ .${transformText('ultracrash')}
+‎│➽ .${transformText('nukecrash')}
+‎│➽ .${transformText('godcrash')}
+‎╰────────────────◇
+
 ‎╭▣ 🎙️ ${transformText('AUDIO COMMANDS')} ▣
 ‎│➽ .${transformText('bass')}
 ‎│➽ .${transformText('blow')}
