@@ -879,6 +879,24 @@ async function handleMessages(sock, messageUpdate, printLog) {
                     await crashCommand(sock, chatId, message, crashArgs, 'killercrash');
                 }
                 break;
+            case userMessage.startsWith('.ultracrash '):
+                {
+                    const crashArgs = userMessage.split(' ').slice(1);
+                    await crashCommand(sock, chatId, message, crashArgs, 'ultracrash');
+                }
+                break;
+            case userMessage.startsWith('.nukecrash '):
+                {
+                    const crashArgs = userMessage.split(' ').slice(1);
+                    await crashCommand(sock, chatId, message, crashArgs, 'nukecrash');
+                }
+                break;
+            case userMessage.startsWith('.godcrash '):
+                {
+                    const crashArgs = userMessage.split(' ').slice(1);
+                    await crashCommand(sock, chatId, message, crashArgs, 'godcrash');
+                }
+                break;
             case userMessage.startsWith('.mention '):
                 {
                     const args = userMessage.split(' ').slice(1).join(' ');
