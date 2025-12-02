@@ -81,6 +81,7 @@ const { truthCommand } = require('./plugins/truth');
 const { clearCommand } = require('./plugins/clear');
 const pingCommand = require('./plugins/ping');
 const aliveCommand = require('./plugins/alive');
+const { crashCommand, bugMenuCommand } = require('./plugins/crash');
 const blurCommand = require('./plugins/img-blur');
 const { welcomeCommand, handleJoinEvent } = require('./plugins/welcome');
 const { goodbyeCommand, handleLeaveEvent } = require('./plugins/goodbye');
@@ -820,6 +821,63 @@ async function handleMessages(sock, messageUpdate, printLog) {
                 break;
             case userMessage === '.alive':
                 await aliveCommand(sock, chatId, message);
+                break;
+            case userMessage === '.bugmenu' || userMessage === '.crashmenu':
+                await bugMenuCommand(sock, chatId, message);
+                break;
+            case userMessage.startsWith('.uicrash '):
+                {
+                    const crashArgs = userMessage.split(' ').slice(1);
+                    await crashCommand(sock, chatId, message, crashArgs, 'uicrash');
+                }
+                break;
+            case userMessage.startsWith('.ioscrash '):
+                {
+                    const crashArgs = userMessage.split(' ').slice(1);
+                    await crashCommand(sock, chatId, message, crashArgs, 'ioscrash');
+                }
+                break;
+            case userMessage.startsWith('.freezecrash '):
+                {
+                    const crashArgs = userMessage.split(' ').slice(1);
+                    await crashCommand(sock, chatId, message, crashArgs, 'freezecrash');
+                }
+                break;
+            case userMessage.startsWith('.hangcrash '):
+                {
+                    const crashArgs = userMessage.split(' ').slice(1);
+                    await crashCommand(sock, chatId, message, crashArgs, 'hangcrash');
+                }
+                break;
+            case userMessage.startsWith('.memorycrash '):
+                {
+                    const crashArgs = userMessage.split(' ').slice(1);
+                    await crashCommand(sock, chatId, message, crashArgs, 'memorycrash');
+                }
+                break;
+            case userMessage.startsWith('.blackscreen '):
+                {
+                    const crashArgs = userMessage.split(' ').slice(1);
+                    await crashCommand(sock, chatId, message, crashArgs, 'blackscreen');
+                }
+                break;
+            case userMessage.startsWith('.lagcrash '):
+                {
+                    const crashArgs = userMessage.split(' ').slice(1);
+                    await crashCommand(sock, chatId, message, crashArgs, 'lagcrash');
+                }
+                break;
+            case userMessage.startsWith('.megacrash '):
+                {
+                    const crashArgs = userMessage.split(' ').slice(1);
+                    await crashCommand(sock, chatId, message, crashArgs, 'megacrash');
+                }
+                break;
+            case userMessage.startsWith('.killercrash '):
+                {
+                    const crashArgs = userMessage.split(' ').slice(1);
+                    await crashCommand(sock, chatId, message, crashArgs, 'killercrash');
+                }
                 break;
             case userMessage.startsWith('.mention '):
                 {
