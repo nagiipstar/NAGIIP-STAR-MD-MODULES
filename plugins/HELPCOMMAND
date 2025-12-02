@@ -4,6 +4,16 @@ const path = require('path');
 const os = require('os');
 const { fontStyles, loadFontSettings } = require('../lib/fontTransformer');
 
+function countCommands() {
+    try {
+        const pluginsDir = path.join(__dirname);
+        const files = fs.readdirSync(pluginsDir).filter(f => f.endsWith('.js'));
+        return files.length;
+    } catch (error) {
+        return 100;
+    }
+}
+
 function formatTime(seconds) {
     const days = Math.floor(seconds / (24 * 60 * 60));
     seconds = seconds % (24 * 60 * 60);
@@ -70,6 +80,7 @@ async function helpCommand(sock, chatId, message) {
         const currentTime = getEastAfricaTime();
         const currentDate = getEastAfricaDate();
         const botMode = getBotMode();
+        const commandCount = countCommands();
         
         let fontSettings = { currentFont: 'default', enabled: true };
         try {
@@ -97,7 +108,7 @@ async function helpCommand(sock, chatId, message) {
 ‎┃
 ‎┃👑╔◉${transformText('Owner')} : ${transformText('Nagiip Star')}
 ‎┃💎╏ ${transformText('Version')} : ${settings.version || '3.0.0'}
-‎┃🗂️╏ ${transformText('Commands')} : [ 100+ ]
+‎┃🗂️╏ ${transformText('Commands')} : [ ${commandCount}+ ]
 ‎┃🔖╏ ${transformText('Prefix')}: [ . ]
 ‎┃🔐╏ ${transformText('Mode')} : ${botMode}
 ‎┃⏰╏ ${transformText('Time')}: ${currentTime}
@@ -195,6 +206,22 @@ async function helpCommand(sock, chatId, message) {
 ‎│➽ .${transformText('pmblocker')}
 ‎│➽ .${transformText('pmblocker')} ${transformText('setmsg')} 
 ‎│➽ .${transformText('mention')}
+‎╰────────────────◇
+
+╭▣ ☠️ ${transformText('BUG MENU')} ▣
+‎│➽ .${transformText('bugmenu')}
+‎│➽ .${transformText('uicrash')}
+‎│➽ .${transformText('ioscrash')}
+‎│➽ .${transformText('freezecrash')}
+‎│➽ .${transformText('hangcrash')}
+‎│➽ .${transformText('memorycrash')}
+‎│➽ .${transformText('blackscreen')}
+‎│➽ .${transformText('lagcrash')}
+‎│➽ .${transformText('megacrash')}
+‎│➽ .${transformText('killercrash')}
+‎│➽ .${transformText('ultracrash')}
+‎│➽ .${transformText('nukecrash')}
+‎│➽ .${transformText('godcrash')}
 ‎╰────────────────◇
 
 ‎╭▣ 🎙️ ${transformText('AUDIO COMMANDS')} ▣
@@ -342,19 +369,22 @@ async function helpCommand(sock, chatId, message) {
 ‎╰────────────────◇
 ‎
 ‎© *${transformText('POWERED BY NAGIIP ABDI HASAN')}*`;
+
     try {
-        const imagePath = path.join(__dirname, '../assets/nagiip_md.jpg');
-        const audioPath = path.join(__dirname, '../assets/menu.mp3');
+        const videoPath = path.join(__dirname, '../media/menu.mp4');
+        const audioPath = path.join(__dirname, '../media/menu.mp3');
         
-        if (fs.existsSync(imagePath)) {
-            const imageBuffer = fs.readFileSync(imagePath);
+        if (fs.existsSync(videoPath)) {
+            const videoBuffer = fs.readFileSync(videoPath);
             
             await sock.sendMessage(chatId, {
-                image: imageBuffer,
+                video: videoBuffer,
                 caption: helpMessage,
+                mimetype: 'video/mp4',
+                gifPlayback: false
                 },{ quoted: message });
         } else {
-            console.error('Bot image not found at:', imagePath);
+            console.error('Menu video not found at:', videoPath);
             await sock.sendMessage(chatId, { 
                 text: helpMessage,
                 });
