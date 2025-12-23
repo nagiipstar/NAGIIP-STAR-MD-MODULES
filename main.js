@@ -1,6 +1,7 @@
 // 🧹 Fix for ENOSPC / temp overflow in hosted panels
 const fs = require('fs');
 const path = require('path');
+const consoleLogger = require('./lib/consoleLogger');
 
 // Redirect temp storage away from system /tmp
 const customTemp = path.join(process.cwd(), 'temp');
@@ -249,9 +250,42 @@ async function handleMessages(sock, messageUpdate, printLog) {
             message.message?.videoMessage?.caption?.trim() ||
             '';
 
-        // Only log command usage
+        // Get sender name and group name for logging
+        let senderName = 'Unknown User';
+        let groupName = '';
+        try {
+            if (sock.contacts && sock.contacts[senderId]) {
+                senderName = sock.contacts[senderId].name || senderName;
+            }
+            if (isGroup && sock.groupMetadata) {
+                const groupMeta = await sock.groupMetadata(chatId).catch(() => ({}));
+                groupName = groupMeta.subject || 'Unknown Group';
+            }
+        } catch (err) {
+            // Use defaults if unable to get names
+        }
+
+        // Log incoming messages
+        if (!message.key.fromMe) {
+            consoleLogger.logIncomingMessage(
+                senderId,
+                senderName,
+                userMessage || rawText,
+                isGroup,
+                groupName
+            );
+        }
+
+        // Log command usage with styled output
         if (userMessage.startsWith('.')) {
-            console.log(`📝 Command used in ${isGroup ? 'group' : 'private'}: ${userMessage}`);
+            const commandName = userMessage.split(' ')[0].substring(1);
+            consoleLogger.logCommandUsage(
+                commandName,
+                senderId,
+                senderName,
+                !isGroup,
+                groupName
+            );
         }
 
         // Handle passive auto-features BEFORE private mode check (these work for all messages)
